@@ -1,0 +1,40 @@
+{
+  "invitees": {
+    "-N9NOcdcICepk9sAoOo5": {
+      "color": "blue",
+      "company_name": "MNKRe",
+      "created_at": 0,
+      "first_name": "Chirag",
+      "last_name": "Patel",
+      "status": true,
+      "uuid": 1001
+    },
+    "-N9NPDBpzT9B5hNtxrnH": {
+      "color": "red",
+      "company_name": "MGA",
+      "created_at": "2023-03-24T16:18:38.104Z",
+      "first_name": "Kalid",
+      "last_name": "Ahmed",
+      "status": true,
+      "uuid": 1002
+    },
+    "-N9NPfdrVdX4fnzQOg-m": {
+      "color": "red",
+      "company_name": "Core Fleet Innovations",
+      "created_at": "2023-03-24T17:01:33.668Z",
+      "first_name": "Lennox",
+      "last_name": "Bunting",
+      "status": true,
+      "uuid": 1003
+    },
+    "-N9NPnIZ2lOENs9tN9Eu": {
+      "color": "john wick",
+      "company_name": "MNKRe",
+      "created_at": 0,
+      "first_name": "new movie best",
+      "last_name": "Patel",
+      "status": false,
+      "uuid": 1004
+    }
+  }
+}
