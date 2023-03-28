@@ -128,13 +128,13 @@ function Presentation() {
 
       {currentPerson ? (
         <>
-          <p style={{ color: "white", fontSize: "70px" }}>Welcome</p>
+          <p  style={{ color: "white", fontSize: "70px", marginTop:"70px" }}>Welcome</p>
 
           <div>
-            <h1 style={{ color: "white", fontSize: "50px" }}>
-              {currentPerson.first_name} {currentPerson.last_name},
+            <h1 style={{ color: "white", fontSize: "120px" }}>
+              {currentPerson.first_name} {currentPerson.last_name}
             </h1>
-            <h1 style={{ color: "white", fontSize: "50px" }}>
+            <h1 style={{ color: "white", fontSize: "120px" }}>
               {currentPerson.company_name}
             </h1>
           </div>
