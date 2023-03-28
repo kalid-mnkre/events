@@ -7,6 +7,7 @@ import "./Invitees.css";
 const Invitees = () => {
   const [invitees, setInvitees] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [attendingCount, setAttendingCount] = useState(0);
 
   useEffect(() => {
     const database = db;
@@ -20,7 +21,10 @@ const Invitees = () => {
           ...inviteesData[key],
         }));
         setInvitees(inviteesArray);
-        console.log(inviteesArray);
+        const attendingCount = inviteesArray.filter(
+            (invitee) => invitee.status === true
+          ).length;
+        setAttendingCount(attendingCount);
       } else {
         setInvitees([]);
       }
@@ -32,6 +36,23 @@ const Invitees = () => {
       const database = db;
       const inviteeRef = ref(database, `invitees/${inviteeId}`);
       await update(inviteeRef, { status: true, created_at: new Date() });
+      setAttendingCount(attendingCount + 1);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleStatusChangeFalse = async (inviteeId) => {
+    try {
+      const database = db;
+      const inviteeRef = ref(database, `invitees/${inviteeId}`);
+      await update(inviteeRef, {
+        status: false,
+        created_at: 0,
+      }); //toTimeString()
+
+      // Update the attending count when a status is changed
+      setAttendingCount(attendingCount - 1);
     } catch (error) {
       console.error(error);
     }
@@ -78,7 +99,21 @@ const Invitees = () => {
       cell: (row) =>
         row.status === false && (
           <button onClick={() => handleStatusChange(row.id)}>
-            Change Status
+            Attending
+          </button>
+        ),
+      ignoreRowClick: true,
+      allowOverflow: true,
+      button: true,
+    },
+    {
+      name: "Action",
+      cell: (row) =>
+        row.status === true && (
+          <button
+            onClick={() => handleStatusChangeFalse(row.id)}
+          >
+            Not Attending
           </button>
         ),
       ignoreRowClick: true,
@@ -111,6 +146,13 @@ const Invitees = () => {
 
   return (
     <div className="container">
+      <div className="card mt-4 mb-4 " style={{ width: "25rem", height: "5rem" }}>
+        <div className="card-body ">
+          <h2 className="card-title mb-4">
+            {attendingCount} invitees are attending
+          </h2>
+        </div>
+      </div>
       <input
         type="text"
         placeholder="Search..."

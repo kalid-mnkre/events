@@ -3,71 +3,150 @@ import { ref, onValue } from "firebase/database";
 import { db } from "./firebase";
 
 function Presentation() {
-  const [person, setPerson] = useState(null);
+  const [persons, setPersons] = useState([]);
+  const [currentPersonIndex, setCurrentPersonIndex] = useState(0);
+  const [loopRecent, setLoopRecent] = useState(true);
+  const [fetchRecent, setFetchRecent] = useState(false);
 
   useEffect(() => {
-    const personsRef = ref(db, "invitees");
-    const unsubscribe = onValue(personsRef, (snapshot) => {
-      const personsObject = snapshot.val();
-      const personsArray = Object.values(personsObject)
-        .filter((person) => person.status === true)
-        .sort((a, b) => b.date - a.date)
-        .slice(0, 2);
-      const randomIndex = Math.floor(Math.random() * personsArray.length);
-      setPerson(personsArray[randomIndex]);
+    const inviteesRef = ref(db, "invitees");
+    const unsubscribe = onValue(inviteesRef, (snapshot) => {
+      const inviteesObject = snapshot.val();
+      const inviteesArray = Object.values(inviteesObject)
+        .filter((invitee) => invitee.status === true)
+        .sort((a, b) => b.date - a.date);
+      setPersons(inviteesArray);
     });
     return () => unsubscribe();
   }, []);
 
   useEffect(() => {
     let interval;
-    if (person) {
+    if (persons.length > 0) {
       interval = setInterval(() => {
-        const personsRef = ref(db, "invitees");
-        const unsubscribe = onValue(personsRef, (snapshot) => {
-          const personsObject = snapshot.val();
-          const personsArray = Object.values(personsObject).filter(
-            (person) => person.status === true
-          ).sort((a, b) => b.date - a.date)
-          .slice(0, 2);
-          const randomIndex = Math.floor(Math.random() * personsArray.length);
-          setPerson(personsArray[randomIndex]);
-        });
-        return () => unsubscribe();
-      }, 1000);
+        setCurrentPersonIndex((index) =>
+          index === persons.length - 1 ? 0 : index + 1
+        );
+      }, 5000);
     }
     return () => clearInterval(interval);
-  }, [person]);
+  }, [persons]);
 
-    const backgroundColor = person && person.color === "red" ? "#DD0101" : "#1E196A";
+  useEffect(() => {
+    const allInviteesRef = ref(db, "invitees");
+    const fetchAllInvitees = () => {
+      const unsubscribe = onValue(allInviteesRef, (snapshot) => {
+        const inviteesObject = snapshot.val();
+        const inviteesArray = Object.values(inviteesObject)
+          .filter((invitee) => invitee.status === true)
+          .sort((a, b) => b.date - a.date);
+        setPersons(inviteesArray);
+        setCurrentPersonIndex(0);
+      });
+      return () => unsubscribe();
+    };
+  
+    const fetchLastThreeInvitees = () => {
+      const lastThreeInviteesRef = ref(db, "invitees");
+      const unsubscribe = onValue(lastThreeInviteesRef, (snapshot) => {
+        const inviteesObject = snapshot.val();
+        const inviteesArray = Object.values(inviteesObject)
+          .filter((invitee) => invitee.status === true)
+          .sort((a, b) => b.date - a.date)
+          .slice(-3)
+          .reverse();
+        setPersons(inviteesArray);
+        setCurrentPersonIndex(0);
+      });
+      return () => unsubscribe();
+    };
+  
+    const timeout = setTimeout(() => {
+        if (fetchRecent) {
+          fetchLastThreeInvitees();
+          console.log("Invite Three");
+        } else {
+          fetchAllInvitees();
+          console.log("InviteAll");
+        }
+        setLoopRecent((prevLoopRecent) => !prevLoopRecent);
+      }, 5000);
+    
+      const resetFetchRecentTimeout = setTimeout(() => {
+        setFetchRecent(false);
+      }, 1 * 60 * 1000); // 5 minutes
+    
+      return () => {
+        clearTimeout(timeout);
+        clearTimeout(resetFetchRecentTimeout);
+      };
+    }, [fetchRecent]);
+  
 
-    useEffect(() => {
-        document.body.style.backgroundColor = backgroundColor;
-        return () => {
-            document.body.style.backgroundColor = null;
-        };
-    }, [backgroundColor]);
+  useEffect(() => {
+    const inviteesRef = ref(db, "invitees");
+    const unsubscribe = onValue(inviteesRef, (snapshot) => {
+      const inviteesObject = snapshot.val();
 
-    const logoSrc = person && person.color === "red" ? "/spmga.jpg" : "/mnkre.jpg";
+      const inviteesArray = Object.values(inviteesObject)
+        .filter((invitee) => invitee.status === true)
+        .sort((a, b) => b.date - a.date)
+        .slice(-2)
+        .reverse();
+      setPersons(inviteesArray);
+      setCurrentPersonIndex(0);
+      setFetchRecent(true)
+    });
+    return () => unsubscribe();
+  }, []);
 
-    return (
-        <div style={{ textAlign: "center" }}>
-            <img  width="250" src={logoSrc} alt="Logo" />
-            
-            {person ? (
-                <>
-            <p style={{ color: 'white', fontSize: '70px' }}>Welcome</p>
-            
-                <div>
-                    <h1 style={{ color: 'white', fontSize: '120px'  }}>{person.first_name} {person.last_name},</h1>
-                    <h1 style={{ color: 'white', fontSize: '120px' }}>{person.company_name}</h1>
-                </div>
-                </>
-            ) : (
-                <p style={{ color: 'white', fontSize: '70px' }}>Dummy Text</p>
-            )}
-        </div>
-    );
+  const currentPerson = persons[currentPersonIndex];
+  const backgroundColor =
+    currentPerson && currentPerson.color === "red" ? "#DD0101" : "#1E196A";
+
+  useEffect(() => {
+    document.body.style.backgroundColor = backgroundColor;
+    return () => {
+      document.body.style.backgroundColor = null;
+    };
+  }, [backgroundColor]);
+
+//   const handleToggleFetchRecent = () => {
+//     setFetchRecent((prevFetchRecent) => !prevFetchRecent);
+//   };
+
+  
+
+  const logoSrc =
+    currentPerson && currentPerson.color === "red"
+      ? "/spmga.jpg"
+      : "/mnkre.jpg";
+
+  return (
+    <div style={{ textAlign: "center" }}>
+      <img width="250" src={logoSrc} alt="Logo" />
+
+      {currentPerson ? (
+        <>
+          <p style={{ color: "white", fontSize: "70px" }}>Welcome</p>
+
+          <div>
+            <h1 style={{ color: "white", fontSize: "50px" }}>
+              {currentPerson.first_name} {currentPerson.last_name},
+            </h1>
+            <h1 style={{ color: "white", fontSize: "50px" }}>
+              {currentPerson.company_name}
+            </h1>
+          </div>
+        </>
+      ) : (
+        <p style={{ color: "white", fontSize: "70px" }}>Dummy Text</p>
+      )}
+      {/* <button onClick={handleToggleFetchRecent}>
+      {fetchRecent ? "Show all invitees" : "Show last three invitees"}
+    </button> */}
+    </div>
+  );
 }
 
 export default Presentation;
