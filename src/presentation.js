@@ -128,19 +128,19 @@ function Presentation() {
 
       {currentPerson ? (
         <>
-          <p  style={{ color: "white", fontSize: "70px", marginTop:"70px" }}>Welcome</p>
+          <p  style={{ color: "white", fontSize: "70px" }}>Welcome</p>
 
           <div>
-            <h1 style={{ color: "white", fontSize: "120px" }}>
+            <h1 style={{ color: "white", fontSize: "100px" }}>
               {currentPerson.Name}
             </h1>
-            <h1 style={{ color: "white", fontSize: "120px" }}>
+            <h1 style={{ color: "white", fontSize: "60px" }}>
               {currentPerson.Company}
             </h1>
           </div>
         </>
       ) : (
-        <p style={{ color: "white", fontSize: "70px" }}>Dummy Text</p>
+        <p style={{ color: "white", fontSize: "70px" }}>Welcome</p>
       )}
       {/* <button onClick={handleToggleFetchRecent}>
       {fetchRecent ? "Show all invitees" : "Show last three invitees"}
