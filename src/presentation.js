@@ -53,7 +53,7 @@ function Presentation() {
         const inviteesArray = Object.values(inviteesObject)
           .filter((invitee) => invitee.status === true)
           .sort((a, b) => b.date - a.date)
-          .slice(-3)
+          .slice(-30)
           .reverse();
         setPersons(inviteesArray);
         setCurrentPersonIndex(0);
@@ -69,12 +69,12 @@ function Presentation() {
           fetchAllInvitees();
           console.log("InviteAll");
         }
-        setLoopRecent((prevLoopRecent) => !prevLoopRecent);
-      }, 5000);
+        //setLoopRecent((prevLoopRecent) => !prevLoopRecent);
+      }, 2 * 60 * 1000);
     
       const resetFetchRecentTimeout = setTimeout(() => {
         setFetchRecent(false);
-      }, 1 * 60 * 1000); // 5 minutes
+      }, 5 * 60 * 1000); // 5 minutes
     
       return () => {
         clearTimeout(timeout);
@@ -91,7 +91,7 @@ function Presentation() {
       const inviteesArray = Object.values(inviteesObject)
         .filter((invitee) => invitee.status === true)
         .sort((a, b) => b.date - a.date)
-        .slice(-2)
+        .slice(-30)
         .reverse();
       setPersons(inviteesArray);
       setCurrentPersonIndex(0);
@@ -124,7 +124,7 @@ function Presentation() {
 
   return (
     <div style={{ textAlign: "center" }}>
-      <img width="250" src={logoSrc} alt="Logo" />
+      <img style={{ marginTop:"20px" }} width="250" src={logoSrc} alt="Logo" />
 
       {currentPerson ? (
         <>
@@ -132,10 +132,10 @@ function Presentation() {
 
           <div>
             <h1 style={{ color: "white", fontSize: "120px" }}>
-              {currentPerson.first_name} {currentPerson.last_name}
+              {currentPerson.Name}
             </h1>
             <h1 style={{ color: "white", fontSize: "120px" }}>
-              {currentPerson.company_name}
+              {currentPerson.Company}
             </h1>
           </div>
         </>

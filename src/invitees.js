@@ -22,8 +22,8 @@ const Invitees = () => {
         }));
         setInvitees(inviteesArray);
         const attendingCount = inviteesArray.filter(
-            (invitee) => invitee.status === true
-          ).length;
+          (invitee) => invitee.status === true
+        ).length;
         setAttendingCount(attendingCount);
       } else {
         setInvitees([]);
@@ -34,8 +34,18 @@ const Invitees = () => {
   const handleStatusChange = async (inviteeId) => {
     try {
       const database = db;
-      const inviteeRef = ref(database, `invitees/${inviteeId}`);
-      await update(inviteeRef, { status: true, created_at: new Date() });
+      const inviteeRef = ref(database, `invitees/${inviteeId}`); // await update(inviteeRef, { status: true }); // Wait for 5 minutes (300000 milliseconds) before updating the created_at property
+      await update(inviteeRef, {
+        status: 'pending',
+        created_at: 0,
+      });
+      setTimeout(async () => {
+        await update(inviteeRef, {
+          status: true,
+          created_at: new Date().getTime(),
+        });
+      }, 5 * 60 * 1000);
+
       setAttendingCount(attendingCount + 1);
     } catch (error) {
       console.error(error);
@@ -65,18 +75,13 @@ const Invitees = () => {
       sortable: true,
     },
     {
-      name: "First Name",
-      selector: (row) => row.first_name,
-      sortable: true,
-    },
-    {
-      name: "Last Name",
-      selector: (row) => row.last_name,
+      name: "Name",
+      selector: (row) => row.Name,
       sortable: true,
     },
     {
       name: "Company Name",
-      selector: (row) => row.company_name,
+      selector: (row) => row.Company,
       sortable: true,
     },
     {
@@ -98,9 +103,7 @@ const Invitees = () => {
       name: "Action",
       cell: (row) =>
         row.status === false && (
-          <button onClick={() => handleStatusChange(row.id)}>
-            Attending
-          </button>
+          <button onClick={() => handleStatusChange(row.id)}>Attending</button>
         ),
       ignoreRowClick: true,
       allowOverflow: true,
@@ -110,9 +113,7 @@ const Invitees = () => {
       name: "Action",
       cell: (row) =>
         row.status === true && (
-          <button
-            onClick={() => handleStatusChangeFalse(row.id)}
-          >
+          <button onClick={() => handleStatusChangeFalse(row.id)}>
             Not Attending
           </button>
         ),
@@ -135,10 +136,13 @@ const Invitees = () => {
 
   const filteredInvitees = invitees.filter(
     (invitee) =>
-      invitee.uuid.toString().includes(searchTerm.toLowerCase()) ||
-      invitee.last_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      invitee.company_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      invitee.color.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      invitee.uuid
+        .toLowerCase()
+        .toString()
+        .includes(searchTerm.toLowerCase().toString()) ||
+      invitee.Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      //invitee.Company.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      //   invitee.color.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (invitee.status ? "attending" : "not attending")
         .toLowerCase()
         .includes(searchTerm.toLowerCase())
@@ -146,7 +150,10 @@ const Invitees = () => {
 
   return (
     <div className="container">
-      <div className="card mt-4 mb-4 " style={{ width: "25rem", height: "5rem" }}>
+      <div
+        className="card mt-4 mb-4 "
+        style={{ width: "25rem", height: "5rem" }}
+      >
         <div className="card-body ">
           <h2 className="card-title mb-4">
             {attendingCount} invitees are attending
