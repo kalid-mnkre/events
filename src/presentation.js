@@ -373,7 +373,7 @@ return (
   <div className="container" style={{ position: 'relative', minHeight: '100vh' }}>
 <img align="left" className="mt-2 mb-0" width="250" src={logoSrc} alt="Logo" />
 <div className="row mt-5 justify-content-center">
-  <div className="col-lg-12 col-md-8 col-sm-10 col-12 align-self-center text-center" style={{ marginRight: '28%' }}>
+  <div className="col-lg-12 col-md-8 col-sm-10 col-12 align-self-center text-center" style={{ marginRight: '28%',marginTop:'7%' }}>
     <div>
       {currentPerson ? (
         <>
@@ -405,8 +405,6 @@ return (
     height: '58%',  /* Use full width of the screen */
     zIndex: '-1' 
   }} 
-
-
 />
 
 
